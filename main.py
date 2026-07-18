@@ -1,15 +1,11 @@
 import streamlit as st
 import requests
 import time
-import base64
 
 st.title("🎬 کارگەی ڕیکلامی زیرەک")
 
-# کلیلەکەت لێرە دابنێ
+# کلیلەکەت تەنها لەم نێوانەدا دابنێ
 API_KEY = "REhabU5kQXhPVUJHbm1WemNqZ3ZjQm1zZWh:WXFqWmxhY1dITS1Gb2ZxTndsenNo"
-
-# ئەنکۆدکردنی کلیلەکە بە شێوەیەکی دروست
-encoded_key = base64.b64encode(API_KEY.encode()).decode()
 
 script = st.text_area("دەقی ڕیکلامەکە:")
 image_url = st.text_input("لینکێکی وێنە (JPG/PNG):")
@@ -19,13 +15,17 @@ if st.button("دروستکردنی ڤیدیۆ"):
         st.write("خەریکی پەیوەندی بە D-ID... چاوەڕێ بە")
         
         url = "https://api.d-id.com/talks"
-        # بەکارهێنانی کلیلە ئەنکۆدکراوەکە لەناو Basic Auth
+        # بەکارهێنانی Bearer لەجیاتی Basic
         headers = {
-            "Authorization": f"Basic {encoded_key}",
+            "Authorization": f"Bearer {API_KEY}",
             "Content-Type": "application/json"
         }
         payload = {
-            "script": {"type": "text", "input": script},
+            "script": {
+                "type": "text", 
+                "input": script,
+                "provider": {"type": "microsoft", "voice_id": "ku-IR-DilaraNeural"} 
+            },
             "source_url": image_url
         }
         
@@ -47,9 +47,9 @@ if st.button("دروستکردنی ڤیدیۆ"):
                     st.video(video_url)
                     break
                 elif status == "error":
-                    st.error("هەڵەیەک ڕوویدا، کلیلەکەت یان لینکەکەت کێشەی هەیە.")
+                    st.error(f"هەڵە ڕوویدا: {result}")
                     break
         else:
-            st.error(f"هەڵە: {response.text}")
+            st.error(f"هەڵە لە دروستکردنی داواکاری: {response.text}")
     else:
         st.warning("تکایە هەموو خانەکان پڕ بکەرەوە.")
