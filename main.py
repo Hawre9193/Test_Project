@@ -1,18 +1,17 @@
 import streamlit as st
+import random
 
-st.title("حاسیبەی پێشکەوتوو")
+st.title("🎲 یارییەکی شێتگیری")
 
-num1 = st.number_input("ژمارەی یەکەم")
-num2 = st.number_input("ژمارەی دووەم")
+if 'number' not in st.session_state:
+    st.session_state.number = random.randint(1, 10)
 
-# لێرەدا هەموو کردارەکان دەخەینە ناو لیستێکەوە
-operations = ["کۆکردنەوە", "لێدەرکردن", "لێکدان", "دابەشکردن"]
-op = st.selectbox("جۆری کردار", operations)
+guess = st.number_input("ژمارەیەک لە نێوان ١ بۆ ١٠ هەڵبژێرە:", min_value=1, max_value=10)
 
-# لێرەدا پایتۆن خۆی بەپێی هەڵبژاردنەکەی تۆ کردارەکە دەکات
-if op == "کۆکردنەوە": st.write("ئەنجام:", num1 + num2)
-elif op == "لێدەرکردن": st.write("ئەنجام:", num1 - num2)
-elif op == "لێکدان": st.write("ئەنجام:", num1 * num2)
-elif op == "دابەشکردن":
-    if num2 != 0: st.write("ئەنجام:", num1 / num2)
-    else: st.write("هەڵە: دابەشکردن بەسەر سفر نابێت")
+if st.button("پشکنین"):
+    if guess == st.session_state.number:
+        st.success("ئۆھ! تۆ زیرەکیت، بەڵام بڕوا ناکەم بە ڕێکەوت بووبێت! 😎")
+        st.session_state.number = random.randint(1, 10)
+    else:
+        st.error("هەڵەیە! تۆ هیچ لە ژمارە نازانیت، دیسان هەوڵ بدە! 🤡")
+        
