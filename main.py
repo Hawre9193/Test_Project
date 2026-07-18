@@ -1,50 +1,29 @@
 import streamlit as st
-import requests
-import time
 
-st.title("🎬 کارگەی ڕیکلامی زیرەک")
+# ناو و ڕێکخستنی لاپەڕە
+st.set_page_config(page_title="ژووری ٩٩", page_icon="🎙️")
 
-# کلیلەکەت ڕاستەوخۆ لێرە دانراوە
-API_KEY = "DHZmNDAxOUBnbWFpbC5jb20:Gb5eGN6xw6lF5IKnBFsuP"
+st.title("🎙️ ژووری ٩٩ - پەیوەندی دەنگی")
+st.subheader("بەخێربێن بۆ ژووری گفتوگۆی تایبەت")
 
-script = st.text_area("دەقی ڕیکلامەکە:")
-image_url = st.text_input("لینکێکی وێنە (JPG/PNG):")
+# ڕێنماییەکان بۆ بەکارهێنەر
+with st.expander("📝 ڕێنماییەکانی بەکارهێنان"):
+    st.write("""
+    - دڵنیابە لەوەی مایکرۆفۆنەکەت کاردەکات.
+    - باشترە گوێگر (Headset) بەکاربهێنیت بۆ کوالێتییەکی باشتر.
+    - کاتێک کرتە لە دوگمەی خوارەوە دەکەیت، پەنجەرەیەکی نوێ بۆ چوونە ژوورەوە دەکرێتەوە.
+    """)
 
-if st.button("دروستکردنی ڤیدیۆ"):
-    if script and image_url:
-        st.write("خەریکی پەیوەندی بە D-ID... چاوەڕێ بە")
-        
-        url = "https://api.d-id.com/talks"
-        headers = {
-            "Authorization": f"Basic {API_KEY}",
-            "Content-Type": "application/json"
-        }
-        payload = {
-            "script": {"type": "text", "input": script},
-            "source_url": image_url
-        }
-        
-        response = requests.post(url, json=payload, headers=headers)
-        
-        if response.status_code == 201:
-            talk_id = response.json().get("id")
-            st.write("ڤیدیۆکە لە قۆناغی دروستکردندایە...")
-            
-            while True:
-                time.sleep(5)
-                get_url = f"https://api.d-id.com/talks/{talk_id}"
-                result = requests.get(get_url, headers=headers).json()
-                status = result.get("status")
-                
-                if status == "done":
-                    video_url = result.get("result_url")
-                    st.success("ڤیدیۆکە ئامادەیە!")
-                    st.video(video_url)
-                    break
-                elif status == "error":
-                    st.error(f"هەڵە ڕوویدا: {result}")
-                    break
-        else:
-            st.error(f"هەڵە: {response.status_code} - {response.text}")
-    else:
-        st.warning("تکایە هەموو خانەکان پڕ بکەرەوە.")
+# لینکی ژوورەکەت
+room_url = "https://room-99-krd.daily.co/jMngeLm0osE5twCVvUoA"
+
+# بەشی چوونە ژوورەوە
+st.info("بۆ دەستپێکردنی گفتوگۆ، کرتە لە دوگمەکە بکە:")
+if st.link_button("چوونە ژووری گفتوگۆ", room_url):
+    st.success("سەرکەوتوو بوو، ژوورەکە کرایەوە!")
+
+# بەشی زیادە بۆ ناونووسین یان تێبینی
+st.divider()
+st.text_input("تکایە ناوی خۆت بنووسە بۆ تۆمارکردن:")
+st.text_area("ئەگەر پرسیارێکت هەیە لێرە بینوسە:")
+st.button("ناردنی تێبینی")
