@@ -4,8 +4,8 @@ import time
 
 st.title("🎬 کارگەی ڕیکلامی زیرەک")
 
-# کلیلەکەت تەنها لەم نێوانەدا دابنێ
-API_KEY = "REhabU5kQXhPVUJHbm1WemNqZ3ZjQm1zZWh:WXFqWmxhY1dITS1Gb2ZxTndsenNo"
+# کلیلەکەت ڕاستەوخۆ لێرە دانراوە
+API_KEY = "DHZmNDAxOUBnbWFpbC5jb20:Gb5eGN6xw6lF5IKnBFsuP"
 
 script = st.text_area("دەقی ڕیکلامەکە:")
 image_url = st.text_input("لینکێکی وێنە (JPG/PNG):")
@@ -15,17 +15,12 @@ if st.button("دروستکردنی ڤیدیۆ"):
         st.write("خەریکی پەیوەندی بە D-ID... چاوەڕێ بە")
         
         url = "https://api.d-id.com/talks"
-        # بەکارهێنانی Bearer لەجیاتی Basic
         headers = {
-            "Authorization": f"Bearer {API_KEY}",
+            "Authorization": f"Basic {API_KEY}",
             "Content-Type": "application/json"
         }
         payload = {
-            "script": {
-                "type": "text", 
-                "input": script,
-                "provider": {"type": "microsoft", "voice_id": "ku-IR-DilaraNeural"} 
-            },
+            "script": {"type": "text", "input": script},
             "source_url": image_url
         }
         
@@ -50,6 +45,6 @@ if st.button("دروستکردنی ڤیدیۆ"):
                     st.error(f"هەڵە ڕوویدا: {result}")
                     break
         else:
-            st.error(f"هەڵە لە دروستکردنی داواکاری: {response.text}")
+            st.error(f"هەڵە: {response.status_code} - {response.text}")
     else:
         st.warning("تکایە هەموو خانەکان پڕ بکەرەوە.")
