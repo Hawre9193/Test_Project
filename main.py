@@ -1,11 +1,15 @@
 import streamlit as st
 import requests
 import time
+import base64
 
 st.title("🎬 کارگەی ڕیکلامی زیرەک")
 
-# کلیلەکەت لێرەیە
+# کلیلەکەت لێرە دابنێ
 API_KEY = "REhabU5kQXhPVUJHbm1WemNqZ3ZjQm1zZWh:WXFqWmxhY1dITS1Gb2ZxTndsenNo"
+
+# ئەنکۆدکردنی کلیلەکە بە شێوەیەکی دروست
+encoded_key = base64.b64encode(API_KEY.encode()).decode()
 
 script = st.text_area("دەقی ڕیکلامەکە:")
 image_url = st.text_input("لینکێکی وێنە (JPG/PNG):")
@@ -15,9 +19,9 @@ if st.button("دروستکردنی ڤیدیۆ"):
         st.write("خەریکی پەیوەندی بە D-ID... چاوەڕێ بە")
         
         url = "https://api.d-id.com/talks"
-        # لێرەدا 'Basic' راستەوخۆ بەکارهاتووە لەگەڵ کلیلەکە
+        # بەکارهێنانی کلیلە ئەنکۆدکراوەکە لەناو Basic Auth
         headers = {
-            "Authorization": f"Basic {API_KEY}",
+            "Authorization": f"Basic {encoded_key}",
             "Content-Type": "application/json"
         }
         payload = {
@@ -43,7 +47,7 @@ if st.button("دروستکردنی ڤیدیۆ"):
                     st.video(video_url)
                     break
                 elif status == "error":
-                    st.error("هەڵەیەک ڕوویدا، لەوانەیە کلیلەکەت کۆن بووبێت.")
+                    st.error("هەڵەیەک ڕوویدا، کلیلەکەت یان لینکەکەت کێشەی هەیە.")
                     break
         else:
             st.error(f"هەڵە: {response.text}")
