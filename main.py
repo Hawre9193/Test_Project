@@ -1,121 +1,62 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# ناونیشانی بەشەکە لە سایتەکەتدا
-st.title("🐍 یاری مار لەناو سایتەکەی خۆم")
-st.write("بە تیری سەر کیبۆردەکە (سەرەوە، خوارەوە، ڕاست، چەپ) یاری بکە!")
+st.title("🐍 یاری مار (بە تایبەتمەندی مۆبایل)")
 
-# لۆجیکی یارییەکە کە لەناو سایتەکەتدا وەک پەنجەرەیەک دەکرێتەوە
 snake_game_html = """
 <!DOCTYPE html>
 <html>
 <head>
 <style>
-  body {
-    background-color: #0e1117;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 420px;
-    margin: 0;
-  }
-  canvas {
-    background-color: #000000;
-    box-shadow: 0 0 15px #00ffff;
-    border: 2px solid #00ffff;
-    border-radius: 10px;
-  }
+  body { background: #0e1117; display: flex; flex-direction: column; align-items: center; }
+  canvas { background: #000; border: 2px solid #00ffff; }
+  .controls { display: grid; grid-template-columns: repeat(3, 50px); gap: 10px; margin-top: 10px; }
+  button { width: 50px; height: 50px; background: #00ffff; border: none; border-radius: 5px; font-weight: bold; }
 </style>
 </head>
 <body>
-
-<canvas id="gameCanvas" width="400" height="400"></canvas>
-
+<canvas id="gameCanvas" width="300" height="300"></canvas>
+<div class="controls">
+  <div></div><button onclick="setDir('UP')">▲</button><div></div>
+  <button onclick="setDir('LEFT')">◀</button><button onclick="setDir('DOWN')">▼</button><button onclick="setDir('RIGHT')">▶</button>
+</div>
 <script>
   const canvas = document.getElementById("gameCanvas");
   const ctx = canvas.getContext("2d");
-
   const box = 20;
-  let snake = [];
-  snake[0] = { x: 9 * box, y: 10 * box };
+  let snake = [{x: 140, y: 140}];
+  let food = {x: 100, y: 100};
+  let d = "RIGHT";
 
-  let food = {
-    x: Math.floor(Math.random() * 19 + 1) * box,
-    y: Math.floor(Math.random() * 19 + 1) * box
-  };
-
-  let score = 0;
-  let d;
-
-  document.addEventListener("keydown", direction);
-
-  function direction(event) {
-    let key = event.keyCode;
-    if (key == 37 && d != "RIGHT") { d = "LEFT"; }
-    else if (key == 38 && d != "DOWN") { d = "UP"; }
-    else if (key == 39 && d != "LEFT") { d = "RIGHT"; }
-    else if (key == 40 && d != "UP") { d = "DOWN"; }
+  function setDir(newDir) { 
+    if(newDir == "UP" && d != "DOWN") d = "UP";
+    if(newDir == "DOWN" && d != "UP") d = "DOWN";
+    if(newDir == "LEFT" && d != "RIGHT") d = "LEFT";
+    if(newDir == "RIGHT" && d != "LEFT") d = "RIGHT";
   }
 
   function draw() {
-    ctx.clearRect(0, 0, 400, 400);
-
-    for (let i = 0; i < snake.length; i++) {
-      ctx.fillStyle = (i == 0) ? "#00FFFF" : "#008B8B"; // ڕەنگی کرمەکە
-      ctx.fillRect(snake[i].x, snake[i].y, box, box);
-      ctx.strokeStyle = "black";
-      ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-    }
-
-    ctx.fillStyle = "#FF1493"; // ڕەنگی خواردنەکە
+    ctx.clearRect(0, 0, 300, 300);
+    ctx.fillStyle = "#FF1493";
     ctx.fillRect(food.x, food.y, box, box);
-
-    let snakeX = snake[0].x;
-    let snakeY = snake[0].y;
-
-    if (d == "LEFT") snakeX -= box;
-    if (d == "UP") snakeY -= box;
-    if (d == "RIGHT") snakeX += box;
-    if (d == "DOWN") snakeY += box;
-
-    if (snakeX == food.x && snakeY == food.y) {
-      score++;
-      food = {
-        x: Math.floor(Math.random() * 19 + 1) * box,
-        y: Math.floor(Math.random() * 19 + 1) * box
-      };
-    } else {
-      snake.pop();
+    
+    for(let i=0; i<snake.length; i++) {
+      ctx.fillStyle = (i==0) ? "#00ffff" : "white";
+      ctx.fillRect(snake[i].x, snake[i].y, box, box);
     }
-
-    let newHead = { x: snakeX, y: snakeY };
-
-    // دۆڕاندن کاتێک بەر دیوار یان خۆی دەکەوێت
-    if (snakeX < 0 || snakeX >= 400 || snakeY < 0 || snakeY >= 400 || collision(newHead, snake)) {
-      clearInterval(game);
-      ctx.fillStyle = "red";
-      ctx.font = "30px Arial";
-      ctx.fillText("SYSTEM FAILURE!", 70, 200);
-    }
-
-    snake.unshift(newHead);
+    
+    let head = {x: snake[0].x, y: snake[0].y};
+    if(d=="UP") head.y -= box;
+    if(d=="DOWN") head.y += box;
+    if(d=="LEFT") head.x -= box;
+    if(d=="RIGHT") head.x += box;
+    
+    snake.unshift(head);
+    snake.pop();
   }
-
-  function collision(head, array) {
-    for (let i = 0; i < array.length; i++) {
-      if (head.x == array[i].x && head.y == array[i].y) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  let game = setInterval(draw, 100); // خێرایی یارییەکە
+  setInterval(draw, 150);
 </script>
-
 </body>
 </html>
 """
-
-# نیشاندانی یارییەکە لەناو سایتەکەت
-components.html(snake_game_html, height=450)
+components.html(snake_game_html, height=500)
